@@ -47,7 +47,7 @@ window.rl_widget_cfg = {
   },
   "cvts": {
     "http://jwreachlocal.github.io": {
-      "/": [
+      "/dev/form.html": [
         {"campaign_id": "USA_223", "cvtid": 556, "value": "high"}
       ]
     }
