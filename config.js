@@ -57,6 +57,11 @@ window.rl_widget_cfg = {
       "referrer_type": "ORGANIC",
       "master_campaign_id": "1226468",
       "campaign_name": "Apple Annies Restaurant 20130121"
+    },
+    "OTHER": {
+      "referrer_type": "ORGANIC",
+      "master_campaign_id": "987654321",
+      "campaign_name": "Apple Annies Restaurant foozball"
     }
   },
   "blacklist": {
