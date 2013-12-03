@@ -21,7 +21,7 @@ window.rl_widget_cfg = {
       "jsCode": "",
       "cssFile": "",
       "config": {}
-    },
+    }/*,
     {
       "name": "email",
       "enabled": true,
@@ -30,7 +30,7 @@ window.rl_widget_cfg = {
       "jsCode": "",
       "cssFile": "/email/rl_email.css",
       "config": {}
-    }
+    }*/
   ],
   "replacements": {
     "DIRECT": {
