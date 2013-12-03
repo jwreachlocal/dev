@@ -35,7 +35,8 @@ window.rl_widget_cfg = {
   "replacements": {
     "DIRECT": {
       "strings": [
-        {"original": "foo", "replace": "cake"}
+        {"original": "foo", "replace": "cake"},
+        {"original": "(2663)", "replace": ""}
       ],
       "phone": [
         {"original": "8888888888", "replace": "7777777777"}
