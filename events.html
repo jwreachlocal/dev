@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>index</title>
+    <script>rl_id = "mms";</script>
+    <script src="http://cdn.rlets-test.com:3000/assets/mms.js?e=S&c=config.js"></script>
+  </head>
+  <body>
+    <script>
+    RE = RL.lib.Events;
+
+    handler1 = function(data, complete) {
+      console.log("executing handler 1 (sync)");
+      console.debug(data);
+    };
+
+    handler2 = function(data, complete) {
+      setTimeout(function() {
+        console.log("executing handler 2 (async)");
+        console.debug(data);
+        if (typeof complete === "function") {
+          complete();
+        }
+      }, 5000);
+    };
+
+    handler3 = function(data, complete) {
+      console.log("executing handler 3 (sync)");
+      console.debug(data);
+    };
+
+    handler4 = function(data, complete) {
+      console.log("executing handler 4(sync)");
+      console.debug(data);
+      console.debug(this);
+    };
+
+    handler5 = function(data, complete) {
+      var self = this;
+
+      setTimeout(function() {
+        console.log("executing handler 5 (async)");
+        console.debug(data);
+        console.debug(self);
+        if (typeof complete === "function") {
+          complete();
+        }
+      }, 2000);
+    };
+
+    complete = function() {
+      console.log("executing complete");
+    };
+
+    context = {howdy: "cowboy"};
+
+    RE.subscribe("foozball", handler1, {handlerData: {foo: "bar"}});
+    RE.subscribe("foozball", handler2, {handlerData: {bar: "foo"}});
+    RE.subscribe("foozball", handler3, {handlerData: {ice: "cream"}});
+    RE.trigger("foozball", complete, {bat: "man"});
+
+    // RE.trigger("barbell", complete, {candy: "cane"});
+    // RE.subscribe("barbell", handler2, {handlerData: {snake: "venom"}});
+
+    // RE.subscribe("dumbell", handler5, {handlerData: {big: "weights"}, handlerContext: context});
+    // RE.subscribe("dumbell", handler4, {handlerData: {big: "weights"}, handlerContext: context});
+    // RE.trigger("dumbell", complete, {candy: "cane"});
+
+    // RE.trigger("yellow", complete, {snow: "man"});
+    // RE.subscribe("yellow", handler1, {handlerData: {pig: "skin"}, executeHandlerEvenIfEventHasBeenTriggered: false});
+    // RE.subscribe("yellow", handler3, {handlerData: {flower: "power"}, executeHandlerEvenIfEventHasBeenTriggered: false});
+    </script>
+  </body>
+</html>

@@ -36,10 +36,14 @@ window.rl_widget_cfg = {
     "DIRECT": {
       "strings": [
         {"original": "foo", "replace": "cake"},
-        {"original": "(2663)", "replace": ""}
+        {"original": "\\(2663\\)", "replace": ""},
+        {"original": "('http://www.chileunderground.com/wp-content/uploads/2011/01/NanasB.png')", "replace": "(https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTgUG6e-CYU-i8zXBpB_FSCYTmY2Amh_tJAmYhYzXVxJgUVjpZgrg)"}
       ],
       "phone": [
-        {"original": "8888888888", "replace": "7777777777"}
+        {"original": "8888888888", "replace": "7777777777"},
+        {"original": "0245787344", "replace": "0123456789"},
+        {"original": "4903097808888", "replace": "1234567891234"},
+        {"original": "011872703", "replace": "987654321"}
       ],
       "email": [
         {"original": "foo@bar.com", "replace": "cake@pops.com"}
