@@ -22,6 +22,8 @@
           complete();
         }
       }, 5000);
+
+      return false;
     };
 
     handler3 = function(data, complete) {
@@ -46,6 +48,8 @@
           complete();
         }
       }, 2000);
+
+      return false;
     };
 
     complete = function() {
@@ -59,16 +63,16 @@
     RE.subscribe("foozball", handler3, {handlerData: {ice: "cream"}});
     RE.trigger("foozball", complete, {bat: "man"});
 
-    // RE.trigger("barbell", complete, {candy: "cane"});
-    // RE.subscribe("barbell", handler2, {handlerData: {snake: "venom"}});
+    RE.trigger("barbell", complete, {candy: "cane"});
+    RE.subscribe("barbell", handler2, {handlerData: {snake: "venom"}});
 
-    // RE.subscribe("dumbell", handler5, {handlerData: {big: "weights"}, handlerContext: context});
-    // RE.subscribe("dumbell", handler4, {handlerData: {big: "weights"}, handlerContext: context});
-    // RE.trigger("dumbell", complete, {candy: "cane"});
+    RE.subscribe("dumbell", handler5, {handlerData: {big: "weights"}, handlerContext: context});
+    RE.subscribe("dumbell", handler4, {handlerData: {big: "weights"}, handlerContext: context});
+    RE.trigger("dumbell", complete, {candy: "sugar"});
 
-    // RE.trigger("yellow", complete, {snow: "man"});
-    // RE.subscribe("yellow", handler1, {handlerData: {pig: "skin"}, executeHandlerEvenIfEventHasBeenTriggered: false});
-    // RE.subscribe("yellow", handler3, {handlerData: {flower: "power"}, executeHandlerEvenIfEventHasBeenTriggered: false});
+    RE.trigger("yellow", complete, {snow: "flour"});
+    RE.subscribe("yellow", handler1, {handlerData: {pig: "skin"}, executeHandlerEvenIfEventHasBeenTriggered: false});
+    RE.subscribe("yellow", handler3, {handlerData: {flower: "power"}, executeHandlerEvenIfEventHasBeenTriggered: false});
     </script>
   </body>
 </html>

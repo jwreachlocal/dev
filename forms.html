@@ -1,20 +1,54 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>form</title>
+    <title>forms</title>
     <script>rl_id = "mms";</script>
-    <script src="http://cdn.rlets-test.com:3000/assets/mms.js?e=S&c=config.js"></script>
+    <script src="http://cdn.rlets-test.com:3000/assets/mms.js?e=S&autorun=0"></script>
+    <script>
+    $ = RL.jq;
+
+    $(document).ready(function() {
+      $('#form1b').submit(function(e) {
+        e.preventDefault();
+        $(this).ajaxSubmit();
+        //return false;
+      });
+    });
+
+    function startTracking() {
+      RL.lib.AjaxListener.start();
+
+      RL.lib.AjaxListener.bind(function(data) {
+        console.log("Ajax post detected...");
+        console.log("Data argument:");
+        console.debug(data);
+      }, {foo: "bar"});
+    }
+
+    function stopTracking() {
+      RL.lib.AjaxListener.stop();
+    }
+    </script>
   </head>
   <body>
-    <p>post to index.html</p>
-  	<form action="index.html" method="post">
+    <p>regular post to index.html</p>
+  	<form id="form1a" action="index.html" method="post">
   		<input type="hidden" name="name" value="john wayne" />
   		<input type="hidden" name="email" value="john.wayne@test.com" />
   		<input type="hidden" name="message" value="hi there" />
   		<input type="submit" />
   	</form>
+    <p>ajax post to index.html</p>
+    <form id="form1b" action="index.html" method="post">
+      <input type="hidden" name="name" value="john wayne" />
+      <input type="hidden" name="email" value="john.wayne@test.com" />
+      <input type="hidden" name="message" value="hi there" />
+      <input type="submit" />
+      <input type="button" value="start tracking ajax post" onclick="startTracking()" />
+      <input type="button" value="stop tracking ajax post" onclick="stopTracking()" />
+    </form>
     <p>post to localhost</p>
-    <form action="http://3fedc1bb-953b-4c86-ab94-57232c837978.rlets-test.com:3000/api/v1/posts" method="post">
+    <form id="form2" action="http://f51e0b33-c1ea-456d-a795-d94c4a598284.rlets-test.com:3000/api/v1/posts" method="post">
       <input type="hidden" name="fname" value="http://m.seattleselectllc.com/contact-thank-you/thank-you.aspx" />
       <input type="hidden" name="formUri" value="/contact-thank-you/thank-you.aspx" />
       <input type="hidden" name="global_master_advertiser_id" value="USA_41538" />

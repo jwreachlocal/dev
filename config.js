@@ -43,7 +43,12 @@ window.rl_widget_cfg = {
         {"original": "8888888888", "replace": "7777777777"},
         {"original": "0245787344", "replace": "0123456789"},
         {"original": "4903097808888", "replace": "1234567891234"},
-        {"original": "011872703", "replace": "987654321"}
+        // {"original": "011872703", "replace": "987654321"},
+        {"original": "4082506672", "replace": "1111111111"},
+        {"original": "6505590440", "replace": "2222222222"},
+        {"original": "5106759646", "replace": "3333333333"},
+        {"original": "003211872703#", "replace": "0032 12345678#"},
+        {"original": "011872703#", "replace": "011 223 344#"}
       ],
       "email": [
         {"original": "foo@bar.com", "replace": "cake@pops.com"}
@@ -53,7 +58,18 @@ window.rl_widget_cfg = {
   "cvts": {
     "http://jwreachlocal.github.io": {
       "/dev/form.html": [
-        {"campaign_id": "USA_223", "cvtid": 556, "value": "high"}
+        {"campaign_id": "USA_12345", "cvtid": 556, "value": "high"}
+      ]
+    },
+    "http://localhost.rtrk.com": {
+      "/index.html": [
+        {"campaign_id": "USA_12345", "cvtid": 555, "value": "low"}
+      ],
+      "/foo": [
+        {"campaign_id": "USA_12345", "cvtid": 666, "value": "low"}
+      ],
+      "/foo/bar": [
+        {"campaign_id": "USA_12345", "cvtid": 777, "value": "high"}
       ]
     }
   },
@@ -66,6 +82,11 @@ window.rl_widget_cfg = {
     "OTHER": {
       "referrer_type": "ORGANIC",
       "master_campaign_id": "987654321",
+      "campaign_name": "Apple Annies Restaurant foozball"
+    },
+    "USA_12345": {
+      "referrer_type": "ORGANIC",
+      "master_campaign_id": "987654300",
       "campaign_name": "Apple Annies Restaurant foozball"
     }
   },

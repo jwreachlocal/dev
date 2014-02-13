@@ -2055,7 +2055,7 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
 (function(window, RL_LIB, $) {
   "use strict";
 
-  var RL_LIB_CAMPAIGN = (function() {
+  var RL_LIB_CAMPAIGN = RL_LIB.Campaign = (function() {
     var CAMPAIGN_DATA = {"scid": "", "cid": "", "tc": "", "rl_key": "", "kw": "", "pub_cr_id": ""};
 
     return {
@@ -2168,7 +2168,7 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
       }
 
       // Retreive from cache.
-      RL.lib.Events.subscribe("get_campaign_data", API._receivedDataFromCache, {handlerData: {response: response, callback: callback}});
+      RL.Events.subscribe("RL_lib_Campaign", "getData", API._receivedDataFromCache, {response: response, callback: callback});
       API._getFromCache();
     };
 
@@ -2182,7 +2182,7 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
      */
     API._receivedDataFromCache = function(data) {
       // Remove listener.
-      RL.lib.Events.unsubscribe("get_campaign_data");
+      RL.Events.unsubscribe("RL_lib_Campaign", "getData");
 
       if (data) {
         // Capture visit.
@@ -2218,7 +2218,7 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
 
       if (!RL_LIB.isWebStorageEnabled()) {
         // Web storage is disabled.
-        return RL.lib.Events.trigger("get_campaign_data", undefined, null);
+        return RL.Events.dispatch("RL_lib_Campaign", "getData", null)
       }
 
       data = sessionStorage.getItem("rl_campaign");
@@ -2242,15 +2242,15 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
         data = JSON.parse(data);
       } catch(err) {
         // Local web storage does not have campaign data.
-        return RL.lib.Events.trigger("get_campaign_data", undefined, null);
+        return RL.Events.dispatch("RL_lib_Campaign", "getData", null);
       }
 
       if (!data.scid || !data.cid || !data.tc || !data.rl_key) {
         // Retrieved data does not contain valid campaign data.
-        return RL.lib.Events.trigger("get_campaign_data", undefined, null);
+        return RL.Events.dispatch("RL_lib_Campaign", "getData", null);
       }
 
-      RL.lib.Events.trigger("get_campaign_data");
+      RL.Events.dispatch("RL_lib_Campaign", "getData", data);
     };
 
     /**
@@ -2267,25 +2267,25 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
         data = JSON.parse(data.rl_campaign || "");
       } catch(err) {
         // Local web storage does not have campaign data.
-        return RL.lib.Events.trigger("get_campaign_data", undefined, null);
+        return RL.Events.dispatch("RL_lib_Campaign", "getData", null);
       }
 
       if (!data.campaign || !data.pageUri) {
         // Retrieved data does not contain valid campaign data.
-        return RL.lib.Events.trigger("get_campaign_data", undefined, null);
+        return RL.Events.dispatch("RL_lib_Campaign", "getData", null);
       }
 
       if (RL.config.config.referrer !== unescape(data.pageUri)) {
         // Retrieved campaign data is not valid for the current visit.
-        return RL.lib.Events.trigger("get_campaign_data", undefined, null);
+        return RL.Events.dispatch("RL_lib_Campaign", "getData", null);
       }
 
       if (!data.campaign.scid || !data.campaign.cid || !data.campaign.tc) {
         // Retrieved data does not contain valid campaign data.
-        return RL.lib.Events.trigger("get_campaign_data", undefined, null);
+        return RL.Events.dispatch("RL_lib_Campaign", "getData", null);
       }
 
-      RL.lib.Events.trigger("get_campaign_data", undefined, data.campaign);
+      RL.Events.dispatch("RL_lib_Campaign", "getData", data.campaign);
     };
 
     /**
@@ -2309,8 +2309,6 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
 
     return API;
   })();
-
-  RL_LIB.Campaign = RL_LIB_CAMPAIGN;
 
 })(window, window.RL.lib, window.rl_jquery);
 /**
@@ -3552,6 +3550,132 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
     },
 
     /**
+     * Create an internal message queue for events.
+     *
+     * Available functions in the .Events namespace:
+     * - subscribe(product, event, handler, scope)
+     * - dispatch(product, event, data)
+     * - unsubscribe(product, name, id)
+     */
+    events: function() {
+      var buffer = {};
+
+      RL.Events = {
+        /**
+         * Subscribe to an event.
+         *
+         * Returns an alpha-numeric id if subscription is successful or else false.
+         * The handler function should return a "false" if there is async logic.
+         *
+         * RL.Events.subscribe(product, event, handler, scope)
+         * product - string - product name (e.g. capture)
+         * event - string - event name (e.g. load, close)
+         * handler - function - a function to execute each time the event is triggered
+         * scope - object - (optional) scope for the handler function
+         *
+         * handler function:
+         * data - object - (optional) key-value mapping
+         * complete - function - (optional) must execute this function if exist when handler contains async logic
+         */
+        subscribe: function(product, event, handler, scope) {
+          var id = String.random(5);
+
+          // Sanity check.
+          if (typeof product !== "string" || typeof event !== "string" || typeof handler !== "function" || product === "" || event === "") {
+            // product, event, and handler params are required.
+            return false;
+          }
+
+          // Store event.
+          if (!buffer[product]) {
+            buffer[product] = {};
+          }
+          if (!buffer[product][event]) {
+            buffer[product][event] = [];
+          }
+          buffer[product][event].push({id: id, handler: handler, scope: scope});
+
+          return id;
+        },
+        /**
+         * Dispatch an event.
+         *
+         * RL.Events.dispatch(product, event, data)
+         * product - string - product name (e.g. capture)
+         * event - string - event name (e.g. load, close)
+         * data - object - (optional) key-value mapping
+         * complete - function - (optional) function to execute once subscribed queue has been dispatched
+         */
+        dispatch: function(product, event, data, complete) {
+          var queue = (buffer[product] && buffer[product][event]) ? buffer[product][event] : [],
+            asyncQueueCount = 0,
+            asyncQueueCounter = 0;
+
+          // Helper function to check if async queue has been dispatched.
+          var done = typeof complete === "function" ? function() {
+              if (++asyncQueueCounter >= asyncQueueCount) {
+                complete();
+              }
+            } : undefined;
+
+          for (var i = -1, length = queue.length; ++i < length;) {
+            var q = queue[i],
+              scope,
+              r;
+
+            if (q === undefined || q === null) {
+              continue;
+            }
+
+            scope = q.scope;
+            r = scope ? q.handler.call(scope, data, done) : q.handler(data, done);
+
+            if (r === false) {
+              // Queue contains async handler.  Increase count.
+              asyncQueueCount++;
+            }
+          }
+
+          if (typeof complete === "function" && asyncQueueCount === 0) {
+            // Queue does not contain async handlers and has been dispatched.
+            complete();
+          }
+        },
+        /**
+         * Unsubscribe from an event.
+         *
+         * If id is not provided, then all the handlers are removed.
+         *
+         * RL.Events.unsubscribe(product, name, id)
+         * product - string - product name (e.g. capture)
+         * event - string - event name (e.g. load, close)
+         * id - string - (optional) id returned from subscribe()
+         */
+        unsubscribe: function(product, event, id) {
+          var queue = (buffer[product] && buffer[product][event]) ? buffer[product][event] : [];
+
+          if (typeof id === "string" && id !== "") {
+            // Remove handler with specified id.
+            for (var i = -1, length = queue.length; ++i < length;) {
+              if (queue[i].id === id) {
+                buffer[product][event].splice(i, 1);
+                return;
+              }
+            }
+            return;
+          }
+
+          if (queue.length > 0) {
+            // Remove all handlers.
+            buffer[product][event] = [];
+          }
+        }
+      };
+
+      return this;
+    },
+
+    /**
      * Various functions used for tracking purposes.
      *
      * Triggers capture-web-service.sendRequest and capture-web-service.receiveResponse events.
@@ -3782,7 +3906,7 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
           });
 
           // Dispatch event.
-          RL.lib.Events.trigger("sent_request_to_capture_api", undefined, {url: url, data: payload, eventId: eventId});
+          RL.Events.dispatch("capture-web-service", "sendRequest", {url: url, data: payload, eventId: eventId});
         },
 
         _buildPayload: function() {
@@ -4283,9 +4407,9 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
             }
 
             // Wait for visit and visitor ids to be available.
-            eventId = self.lib.Events.subscribe("Capture_visit", function(data) {
+            eventId = self.Events.subscribe("capture", "visit", function(data) {
               // Unsubscribe to event.
-              self.lib.Events.unsubscribe(eventId);
+              self.Events.unsubscribe("capture", "visit", eventId);
 
               // Track CVT since visit and visitor ids are available.
               self.CaptureWS.trackCvt({
@@ -4325,9 +4449,9 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
           }
 
           // Wait for visit and visitor ids to be available.
-          eventId = self.lib.Events.subscribe("Capture_visit", function(data) {
+          eventId = self.Events.subscribe("capture", "visit", function(data) {
             // Unsubscribe to event.
-            self.lib.Events.unsubscribe(eventId);
+            self.Events.unsubscribe("capture", "visit", eventId);
 
             // End timeout.
             clearTimeout(timeoutId);
@@ -4345,7 +4469,7 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
         };
 
         // Subscribe to form-submission-capture.callback event.
-        self.lib.Events.subscribe("captured_form_submission", function(data, complete) {
+        self.Events.subscribe("form-submission-capture", "callback", function(data, complete) {
           var formCvts = getCvt.call(self, data.url),
             cvt = formCvts.cvt,
             isAuto8 = false;
@@ -4511,7 +4635,7 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
 
                     hasSubmitted = true;
 
-                    self.lib.Events.trigger("captured_form_submission", undefined, {form: formE, url: formE.action, data: $(formE).formSerialize()}, function() {
+                    self.Events.dispatch("form-submission-capture", "callback", {form: formE, url: formE.action, data: $(formE).formSerialize()}, function() {
                       $formE.find(":submit").click();
                     });
 
@@ -4544,7 +4668,7 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
                     }
 
                     // Dispatch form-submission-capture.callback event.
-                    self.lib.Events.trigger("captured_form_submission", undefined, {form: formE, url: formE.action, data: formData}, function() {
+                    self.Events.dispatch("form-submission-capture", "callback", {form: formE, url: formE.action, data: formData}, function() {
                       // Form submission is not cancelled.
                       formE.submit();
                     });
@@ -4565,7 +4689,7 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
                           return;
                         }
 
-                        self.lib.Events.trigger("captured_form_submission", undefined, {form: formE, url: formE.action, data: formData}, function() {
+                        self.Events.dispatch("form-submission-capture", "callback", {form: formE, url: formE.action, data: formData}, function() {
                           // Form submission is not cancelled.
                           submit.apply(formE, args);
                         });
@@ -4653,7 +4777,7 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
                 submittedForms.push(formE);
 
                 // Dispatch form-submission-capture.callback event.
-                self.lib.Events.trigger("captured_form_submission", undefined, {url: formUri, data: data});
+                self.Events.dispatch("form-submission-capture", "callback", {url: formUri, data: data});
                 return;
               }
             }
@@ -5155,7 +5279,7 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
         }
 
         // Dispatch form-submission-capture.callback event.
-        RL.lib.Events.trigger("captured_form_submission", settings.complete, {url: settings.url, data: settings.data, node: settings.node});
+        RL.Events.dispatch("form-submission-capture", "callback", {url: settings.url, data: settings.data, node: settings.node}, settings.complete);
 
         return true;
       };
@@ -5893,7 +6017,7 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
     SELF_INIT._replacePageContent(SELF_INIT._getOrganicVisitReplacementDataType());
 
     // Dispatch visit event.
-    RL.lib.Events.trigger("Capture_visit", undefined, {visitorId: data.visitor_id, visitId: data.visit_id, referrerType: data.referrer_type, botType: data.bot_type});
+    RL.Events.dispatch("capture", "visit", {visitorId: data.visitor_id, visitId: data.visit_id, referrerType: data.referrer_type, botType: data.bot_type});
   };
 
   /**
@@ -5907,7 +6031,7 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
     API.init._replacePageContent(API.init._getOrganicVisitReplacementDataType());
 
     // Dispatch visit event.
-    RL.lib.Events.trigger("Capture_visit", undefined, {visitorId: data.visitorId, visitId: data.visitId, referrerType: data.referrerType, botType: data.botType});
+    RL.Events.dispatch("capture", "visit", {visitorId: data.visitorId, visitId: data.visitId, referrerType: data.referrerType, botType: data.botType});
   };
 
   RL.CAPTURE = API;
@@ -5962,7 +6086,7 @@ function ChatProduct(window, RL) {
       this.initializeChat(chatConfig.apex_chat_id);
 
       // Dispatch load event.
-      RL.lib.Events.trigger("Chat_load");
+      RL.Events.dispatch("chat", "load");
     },
 
     initializeChat: function(id, rl_adid, rl_key) {
@@ -5976,14 +6100,14 @@ function ChatProduct(window, RL) {
 
 ChatProduct(window, window.RL);
 /**
- * Total Video Now.
- *
- *
+ * Total Video Now. 
+ * 
+ * 
  * Display a video player in a user-specified DOM or in an overlay.
- *
- *
+ * 
+ * 
  * Example product settings in the config file (rl_config.js):
- *
+ * 
  * config: {
  *   cssSelector: "#my-div",
  *   closeButtonText: "",
@@ -5991,9 +6115,9 @@ ChatProduct(window, window.RL);
  *   closeButtonWidth: "100",
  *   closeButtonHeight: "50",
  *   autoplay: "1",
- *   video: "<object id=\"player_swf\" classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" width=\"400\" height=\"332\" codebase=\"http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab\"><param name=\"movie\" value=\"http://cdn-akm.vmixcore.com/core-flash/UnifiedVideoPlayer/UnifiedVideoPlayer.swf?player_id=80b916b86efd0417de7e77c4c21f069b\"></param><param name=\"allowScriptAccess\" value=\"always\"></param><param name=\"allowFullScreen\" value=\"true\"></param><param name=\"wmode\" value=\"transparent\"></param><param name=\"flashVars\" value=\"player_id=80b916b86efd0417de7e77c4c21f069b&services_url=http://cdn-akm.vmixcore.com/core-flash/UnifiedVideoPlayer/services.xml&env=&token=V0Uo0cQHKBkX5aiwxLovkxeeJiBegwHRRD\"></param> <embed name=\"player_swf\" src=\"http://cdn-akm.vmixcore.com/core-flash/UnifiedVideoPlayer/UnifiedVideoPlayer.swf?player_id=80b916b86efd0417de7e77c4c21f069b\" width=\"400\" height=\"332\" allowScriptAccess=\"always\" allowFullScreen=\"true\" wmode=\"transparent\" type=\"application/x-shockwave-flash\" flashvars=\"player_id=80b916b86efd0417de7e77c4c21f069b&services_url=http://cdn-akm.vmixcore.com/core-flash/UnifiedVideoPlayer/services.xml&env=&token=V0Uo0cQHKBkX5aiwxLovkxeeJiBegwHRRD\" swliveconnect=\"true\" pluginspage=\"http://www.adobe.com/go/getflashplayer\"></embed></object>",
+ *   video: "<object id=\"player_swf\" classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" width=\"400\" height=\"332\" codebase=\"http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab\"><param name=\"movie\" value=\"http://cdn-akm.vmixcore.com/core-flash/UnifiedVideoPlayer/UnifiedVideoPlayer.swf?player_id=80b916b86efd0417de7e77c4c21f069b\"></param><param name=\"allowScriptAccess\" value=\"always\"></param><param name=\"allowFullScreen\" value=\"true\"></param><param name=\"wmode\" value=\"transparent\"></param><param name=\"flashVars\" value=\"player_id=80b916b86efd0417de7e77c4c21f069b&services_url=http://cdn-akm.vmixcore.com/core-flash/UnifiedVideoPlayer/services.xml&env=&token=V0Uo0cQHKBkX5aiwxLovkxeeJiBegwHRRD\"></param> <embed name=\"player_swf\" src=\"http://cdn-akm.vmixcore.com/core-flash/UnifiedVideoPlayer/UnifiedVideoPlayer.swf?player_id=80b916b86efd0417de7e77c4c21f069b\" width=\"400\" height=\"332\" allowScriptAccess=\"always\" allowFullScreen=\"true\" wmode=\"transparent\" type=\"application/x-shockwave-flash\" flashvars=\"player_id=80b916b86efd0417de7e77c4c21f069b&services_url=http://cdn-akm.vmixcore.com/core-flash/UnifiedVideoPlayer/services.xml&env=&token=V0Uo0cQHKBkX5aiwxLovkxeeJiBegwHRRD\" swliveconnect=\"true\" pluginspage=\"http://www.adobe.com/go/getflashplayer\"></embed></object>", 
  * }
- *
+ * 
  * cssSelector - string - (optional) DOM node id.  if not populated, video player will be displayed in an overlay window.
  * closeButtonText - string - (optional) user specified close button text.  if this and closeButtonImage are not populated, text "X" is used.
  * closeButtonImage - string - (optional) close button image url.
@@ -6005,15 +6129,15 @@ ChatProduct(window, window.RL);
 
 (function(window, undefined, $RL) {
 	"use strict";
-
+	
 	var $VIDEO = {},									// Video widget (window.RL.VIDEO).
     videoConfig,                // Video config alias
 		videoE;											// Video node.
-
+		
 
 	/**
 	 * Create close button.
-	 *
+	 * 
 	 * createCloseButton()
 	 */
 	var createCloseButton = function() {
@@ -6022,7 +6146,7 @@ ChatProduct(window, window.RL);
 			$containerE = $("<div>").addClass("rl-video-close-container"),					// Close button container node.
 			$buttonE = $("<a>", {href: "javascript:void(0);"}).addClass("rl-video-close"),	// Close button node.
 			$buttonImageE;																	// Close button image node.
-
+		
 		if (vConfig.closeButtonText !== "") {
 			// Create close button with user-specified text.
 			$buttonE.html(vConfig.closeButtonText);
@@ -6034,7 +6158,7 @@ ChatProduct(window, window.RL);
 			// Create close button with a default text.
 			$buttonE.html("X");
 		}
-
+		
 		// Apply width and height close button image if exist.
 		if (vConfig.width !== "" && $buttonImageE) {
 			$buttonImageE.css({width: vConfig.width + "px"});
@@ -6043,17 +6167,17 @@ ChatProduct(window, window.RL);
 			$containerE.css({height: vConfig.height + "px"});
 			$buttonImageE.css({height: vConfig.height + "px"});
 		}
-
+		
 		return $containerE.append($buttonE).get(0);
-	};
-
+	};	
+	
 	/**
 	 * Create the video player.
-	 *
+	 * 
 	 * Create the iframe node then write the video embed code into iframe's document object.
-	 *
-	 * create()
-	 */
+	 * 
+	 * create() 
+	 */	
 	var create = function(overlay) {
 		var IFRAME_DOC_CONTENT = ["<html><head><style>html,body{padding:0;margin:0;}</style><script type=\"text/javascript\">rl_events = function(e) {if (typeof window.parent.rlvideo_events === \"function\") {window.parent.rlvideo_events(e);}};</script></head><body>", "</body></html>"],	// Iframe content.
 			_$VIDEO = this,				// $VIDEO alias.
@@ -6061,19 +6185,19 @@ ChatProduct(window, window.RL);
 			vConfig = _$VIDEO.config(),	// Cleaned up settings.
 			video = vConfig.video,		// Video embed code.
 			$iframeE = $("<iframe>", {id: "rl-video-iframe", scrolling: "no", frameborder: 0});	// Iframe node.
-
+			
 		if (vConfig.autoplay === "1" || overlay === true) {
 			// Set autoplay if specified or is in an overlay.
 			video = video.replace("name=\"flashVars\" value=\"", "name=\"flashVars\" value=\"auto_play=1&").replace("type=\"application/x-shockwave-flash\" flashvars=\"", "type=\"application/x-shockwave-flash\" flashvars=\"auto_play=1&");
 		}
-
+		
 		if (overlay === true) {
 			// Attach auto-close event handler for video played in an overlay.
 			window.rlvideo_events = function(e) {
 				if (e.type === "video_complete") {
 					setTimeout(
 						function() {
-							_$VIDEO.hide();
+							_$VIDEO.hide();	
 						},
 						750
 					);
@@ -6081,7 +6205,7 @@ ChatProduct(window, window.RL);
 			};
 			video = video.replace("name=\"flashVars\" value=\"", "name=\"flashVars\" value=\"event_handler=rl_events&").replace("type=\"application/x-shockwave-flash\" flashvars=\"", "type=\"application/x-shockwave-flash\" flashvars=\"event_handler=rl_events&");
 		}
-
+		
 		$iframeE.ready(function() {
 			// Write VMIX video JS to iframe's document.
 			var iframeDocE = $iframeE.contents().get(0);
@@ -6089,10 +6213,10 @@ ChatProduct(window, window.RL);
 			iframeDocE.write(IFRAME_DOC_CONTENT.join(video));
 			iframeDocE.close();
 		});
-
+		
 		return $iframeE.get(0);
 	};
-
+	
 
 	$VIDEO = {
 		/**
@@ -6107,7 +6231,7 @@ ChatProduct(window, window.RL);
 		config: function(key) {
 			var $ = $RL.jq,				// jQuery alias.
 				vConfig = videoConfig;	// Video config alias.
-
+				
 			// Helper function to clean up setting.
 			var clean = function(key, value) {
 				switch (key) {
@@ -6117,33 +6241,33 @@ ChatProduct(window, window.RL);
 								// Only node ids are accepted.
 								value = "#" + value;
 							}
-
+							
 							if ($(value).length > 0) {
 								// User-specified node exist.
 								return value;
 							}
 						}
 						return "";
-
+					
 					case "closeButtonText":
 					case "closeButtonImage":
 						return typeof value === "string" ? value : "";
-
+						
 					case "closeButtonWidth":
 					case "closeButtonHeight":
 						return $.isNumeric(value) ? String(value) : "";
-
+						
 					case "autoplay":
 						return value == "1" ? "1" : "0";
-
+						
 					case "video":
 						return (typeof value === "string" && value !== "") ? value.replace(/&?auto_play=[01]/g, "") : "";
-
+						
 					default:
 						return "";
 				}
 			};
-
+				
 			if (typeof key === "string" && key !== "") {
 				// Return specfic setting.
 				if (!vConfig[key]) {
@@ -6152,7 +6276,7 @@ ChatProduct(window, window.RL);
 				}
 				return clean(key, vConfig[key]);
 			} else {
-				// Return all settings.
+				// Return all settings.		
 				return {
 					cssSelector: clean("cssSelector", vConfig.cssSelector),
 					closeButtonText: clean("closeButtonText", vConfig.closeButtonText),
@@ -6164,7 +6288,7 @@ ChatProduct(window, window.RL);
 				};
 			}
 		},
-
+		
 		/**
 		 * Hide and remove video player.
 		 *
@@ -6178,7 +6302,7 @@ ChatProduct(window, window.RL);
 				_$EMAIL = this,									// $EMAIL alias.
 				$ = $RL.jq,										// jQuery alias.
 				$videoContainerE = $("#rl-video-container");	// Video container (overlay) node.
-
+			
 			if ($videoContainerE.length > 0) {
 				// Video player displayed in an overlay.
 				$videoContainerE.fadeOut("fast", function() {
@@ -6193,18 +6317,18 @@ ChatProduct(window, window.RL);
 					$videoE = videoE = undefined;
 				});
 			}
-
+			
 			// Dispatch hide event.
-			_$RL.lib.Events.trigger("Video_hide");
-
+			_$RL.Events.dispatch("video", "hide");
+			
 			return _$EMAIL;
 		},
-
+		
 		/**
 		 * Init.
-		 *
+		 * 
 		 * Fire video.load event.
-		 *
+		 * 
 		 * .init()
 		 */
 		init: function() {
@@ -6219,12 +6343,12 @@ ChatProduct(window, window.RL);
 				_$VIDEO.show(_$VIDEO.config("autoplay"));
 
 				// Dispatch load event.
-				_$RL.lib.Events.trigger("Video_load");
+				_$RL.Events.dispatch("video", "load");
 			});
-
+					
 			return _$VIDEO;
 		},
-
+		
 		/**
 		 * Display video.
 		 *
@@ -6240,12 +6364,12 @@ ChatProduct(window, window.RL);
 				_$VIDEO = this,				// $VIDEO alias.
 				$ = _$RL.jq,				// jQuery alias.
 				cssSelector = _$VIDEO.config("cssSelector");	// Cleaned up settings.
-
+				
 			if (videoE !== undefined) {
 				// Video is already displayed.
 				return false;
 			}
-
+			
 			if (cssSelector !== "") {
 				// Look for user-specified DOM node.
 				var $videoE = $(cssSelector);
@@ -6260,7 +6384,7 @@ ChatProduct(window, window.RL);
 				videoE = $("<div>", {id: "rl-video"})
 					.append(createCloseButton.call(_$VIDEO))
 					.get(0);
-
+				
 				// Create overlay.
 				$("<div>", {id: "rl-video-container"})
 					.click(function() {
@@ -6271,17 +6395,17 @@ ChatProduct(window, window.RL);
 					.css({display: "none"})
 					.appendTo($("body"))
 					.fadeIn("fast");
-
+				
 				// Parent node needs to be on the DOM first.
 				videoE.appendChild(create.call(_$VIDEO, true));
 			}
-
+			
 			// Dispatch show event.
-			_$RL.lib.Events.trigger("Video_show");
+			_$RL.Events.dispatch("video", "show");
 		}
 	};
 
-
+	
 	$RL.VIDEO = $VIDEO;
 })(window, undefined, window.RL);
 /**
@@ -6364,7 +6488,7 @@ ChatProduct(window, window.RL);
 					}
 
 					// Dispatch drop event.
-					_$RL.lib.Events.trigger("Remarketing_drop");
+					_$RL.Events.dispatch("remarketing", "drop");
 
 					return this;
 				}
@@ -6397,7 +6521,7 @@ ChatProduct(window, window.RL);
 				_$REMARKETING.drop();
 
 				// Dispatch load event.
-				_$RL.lib.Events.trigger("Remarketing_load");
+				_$RL.Events.dispatch("remarketing", "load");
 			});
 
 			return _$REMARKETING;
@@ -6642,8 +6766,8 @@ ChatProduct(window, window.RL);
     }
 
     // Wait for visit and visitor ids to be available.
-    eventId = _$RL.lib.Events.subscribe("Capture_visit", function(data) {
-      _$RL.lib.Events.unsubscribe(eventId);
+    eventId = _$RL.Events.subscribe("capture", "visit", function(data) {
+      _$RL.Events.unsubscribe("capture", "visit", eventId);
 
       payload.visit_id = data.visitId;
       payload.visitor_id = data.visitorId;
@@ -6690,8 +6814,8 @@ ChatProduct(window, window.RL);
     }
 
     // Wait for visit and visitor ids to be available.
-    eventId = _$RL.lib.Events.subscribe("Capture_visit", function(data) {
-      _$RL.lib.Events.unsubscribe(eventId);
+    eventId = _$RL.Events.subscribe("capture", "visit", function(data) {
+      _$RL.Events.unsubscribe("capture", "visit", eventId);
 
       payload.visit_id = data.visitId;
       payload.visitor_Id = data.visitorId;
@@ -6908,7 +7032,7 @@ ChatProduct(window, window.RL);
       }
 
       // Dispatch hide event.
-      _$RL.lib.Events.trigger("Email_hide");
+      _$RL.Events.dispatch("email", "hide");
 
       return _$EMAIL;
     },
@@ -6944,7 +7068,7 @@ ChatProduct(window, window.RL);
           _$EMAIL.replace();
 
           // Dispatch load event.
-          _$RL.lib.Events.trigger("Email_load");
+          _$RL.Events.dispatch("email", "load");
         });
       });
 
@@ -6989,7 +7113,7 @@ ChatProduct(window, window.RL);
       });
 
       // Dispatch replace event.
-      _$RL.lib.Events.trigger("Email_replace");
+      _$RL.Events.dispatch("email", "replace");
 
       return _$EMAIL;
     },
@@ -7068,7 +7192,7 @@ ChatProduct(window, window.RL);
       trackCvt.call(_$EMAIL, {cvtType: 2, email: companyEmail});
 
       // Dispatch show event.
-      _$RL.lib.Events.trigger("Email_show");
+      _$RL.Events.dispatch("email", "show");
 
       return _$EMAIL;
     }
