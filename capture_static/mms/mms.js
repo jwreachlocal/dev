@@ -9,6 +9,8 @@
 (function(c){function u(a){var e=a.data;a.isDefaultPrevented()||(a.preventDefault(),c(this).ajaxSubmit(e))}function t(a){var e=a.target,g=c(e);if(!g.is(":submit,input:image")){e=g.closest(":submit");if(0===e.length)return;e=e[0]}var b=this;b.clk=e;"image"==e.type&&(void 0!==a.offsetX?(b.clk_x=a.offsetX,b.clk_y=a.offsetY):"function"==typeof c.fn.offset?(g=g.offset(),b.clk_x=a.pageX-g.left,b.clk_y=a.pageY-g.top):(b.clk_x=a.pageX-e.offsetLeft,b.clk_y=a.pageY-e.offsetTop));setTimeout(function(){b.clk=b.clk_x=b.clk_y=null},100)}function p(){if(c.fn.ajaxSubmit.debug){var a="[jquery.form] "+Array.prototype.join.call(arguments,"");window.console&&window.console.log?window.console.log(a):window.opera&&window.opera.postError&&window.opera.postError(a)}}var A,B;A=void 0!==c("<input type='file'/>").get(0).files;B=void 0!==window.FormData;c.fn.ajaxSubmit=function(a){function e(b){function e(){function a(){try{var b=(q.contentWindow?q.contentWindow.document:q.contentDocument?q.contentDocument:q.document).readyState;p("state = "+b);b&&"uninitialized"==b.toLowerCase()&&setTimeout(a,50)}catch(c){p("Server abort: ",c," (",c.name,")"),j(C),t&&clearTimeout(t),t=void 0}}var b=k.attr("target"),h=k.attr("action");f.setAttribute("target",m);g||f.setAttribute("method","POST");h!=d.url&&f.setAttribute("action",d.url);!d.skipEncodingOverride&&(!g||/post/i.test(g))&&k.attr({encoding:"multipart/form-data",enctype:"multipart/form-data"});d.timeout&&(t=setTimeout(function(){u=!0;j(y)},d.timeout));var l=[];try{if(d.extraData)for(var i in d.extraData)d.extraData.hasOwnProperty(i)&&(c.isPlainObject(d.extraData[i])&&d.extraData[i].hasOwnProperty("name")&&d.extraData[i].hasOwnProperty("value")?l.push(c('<input type="hidden" name="'+d.extraData[i].name+'">').attr("value",d.extraData[i].value).appendTo(f)[0]):l.push(c('<input type="hidden" name="'+i+'">').attr("value",d.extraData[i]).appendTo(f)[0]));d.iframeTarget||(w.appendTo("body"),q.attachEvent?q.attachEvent("onload",j):q.addEventListener("load",j,!1));setTimeout(a,15);f.submit()}finally{f.setAttribute("action",h),b?f.setAttribute("target",b):k.removeAttr("target"),c(l).remove()}}function j(a){if(!h.aborted&&!B){try{r=q.contentWindow?q.contentWindow.document:q.contentDocument?q.contentDocument:q.document}catch(b){p("cannot access response document: ",b),a=C}if(a===y&&h)h.abort("timeout"),v.reject(h,"timeout");else if(a==C&&h)h.abort("server abort"),v.reject(h,"error","server abort");else if(r&&r.location.href!=d.iframeSrc||u){q.detachEvent?q.detachEvent("onload",j):q.removeEventListener("load",j,!1);var a="success",e;try{if(u)throw"timeout";var f="xml"==d.dataType||r.XMLDocument||c.isXMLDoc(r);p("isXml="+f);if(!f&&(window.opera&&(null===r.body||!r.body.innerHTML))&&--A){p("requeing onLoad callback, DOM not available");setTimeout(j,250);return}var g=r.body?r.body:r.documentElement;h.responseText=g?g.innerHTML:null;h.responseXML=r.XMLDocument?r.XMLDocument:r;f&&(d.dataType="xml");h.getResponseHeader=function(a){return{"content-type":d.dataType}[a]};g&&(h.status=Number(g.getAttribute("status"))||h.status,h.statusText=g.getAttribute("statusText")||h.statusText);var i=(d.dataType||"").toLowerCase(),k=/(json|script|text)/.test(i);if(k||d.textarea){var m=r.getElementsByTagName("textarea")[0];if(m)h.responseText=m.value,h.status=Number(m.getAttribute("status"))||h.status,h.statusText=m.getAttribute("statusText")||h.statusText;else if(k){var n=r.getElementsByTagName("pre")[0],D=r.getElementsByTagName("body")[0];n?h.responseText=n.textContent?n.textContent:n.innerText:D&&(h.responseText=D.textContent?D.textContent:D.innerText)}}else"xml"==i&&(!h.responseXML&&h.responseText)&&(h.responseXML=E(h.responseText));try{var f=h,g=d,s=f.getResponseHeader("content-type")||"",F="xml"===i||!i&&0<=s.indexOf("xml"),x=F?f.responseXML:f.responseText;F&&"parsererror"===x.documentElement.nodeName&&c.error&&c.error("parsererror");g&&g.dataFilter&&(x=g.dataFilter(x,i));"string"===typeof x&&("json"===i||!i&&0<=s.indexOf("json")?x=H(x):("script"===i||!i&&0<=s.indexOf("javascript"))&&c.globalEval(x));z=x}catch(I){a="parsererror",h.error=e=I||a}}catch(G){p("error caught: ",G),a="error",h.error=e=G||a}h.aborted&&(p("upload aborted"),a=null);h.status&&(a=200<=h.status&&300>h.status||304===h.status?"success":"error");"success"===a?(d.success&&d.success.call(d.context,z,"success",h),v.resolve(h.responseText,"success",h),l&&c.event.trigger("ajaxSuccess",[h,d])):a&&(void 0===e&&(e=h.statusText),d.error&&d.error.call(d.context,h,a,e),v.reject(h,"error",e),l&&c.event.trigger("ajaxError",[h,d,e]));l&&c.event.trigger("ajaxComplete",[h,d]);l&&!--c.active&&c.event.trigger("ajaxStop");d.complete&&d.complete.call(d.context,h,a);B=!0;d.timeout&&clearTimeout(t);setTimeout(function(){d.iframeTarget||w.remove();h.responseXML=null},100)}}}var f=k[0],i,d,l,m,w,q,h,s,u,t;s=!!c.fn.prop;var v=c.Deferred();if(c(":input[name=submit],:input[id=submit]",f).length)return alert('Error: Form elements must not have name or id of "submit".'),v.reject(),v;if(b)for(i=0;i<n.length;i++)b=c(n[i]),s?b.prop("disabled",!1):b.removeAttr("disabled");d=c.extend(!0,{},c.ajaxSettings,a);d.context=d.context||d;m="jqFormIO"+(new Date).getTime();d.iframeTarget?(w=c(d.iframeTarget),(b=w.attr("name"))?m=b:w.attr("name",m)):(w=c('<iframe name="'+m+'" src="'+d.iframeSrc+'" />'),w.css({position:"absolute",top:"-1000px",left:"-1000px"}));q=w[0];h={aborted:0,responseText:null,responseXML:null,status:0,statusText:"n/a",getAllResponseHeaders:function(){},getResponseHeader:function(){},setRequestHeader:function(){},abort:function(a){var b="timeout"===a?"timeout":"aborted";p("aborting upload... "+b);this.aborted=1;if(q.contentWindow.document.execCommand)try{q.contentWindow.document.execCommand("Stop")}catch(e){}w.attr("src",d.iframeSrc);h.error=b;d.error&&d.error.call(d.context,h,b,a);l&&c.event.trigger("ajaxError",[h,d,b]);d.complete&&d.complete.call(d.context,h,b)}};(l=d.global)&&0===c.active++&&c.event.trigger("ajaxStart");l&&c.event.trigger("ajaxSend",[h,d]);if(d.beforeSend&&!1===d.beforeSend.call(d.context,h,d))return d.global&&c.active--,v.reject(),v;if(h.aborted)return v.reject(),v;if(s=f.clk)if((b=s.name)&&!s.disabled)d.extraData=d.extraData||{},d.extraData[b]=s.value,"image"==s.type&&(d.extraData[b+".x"]=f.clk_x,d.extraData[b+".y"]=f.clk_y);var y=1,C=2;s=c("meta[name=csrf-token]").attr("content");if((b=c("meta[name=csrf-param]").attr("content"))&&s)d.extraData=d.extraData||{},d.extraData[b]=s;d.forceSync?e():setTimeout(e,10);var z,r,A=50,B,E=c.parseXML||function(a,b){window.ActiveXObject?(b=new ActiveXObject("Microsoft.XMLDOM"),b.async="false",b.loadXML(a)):b=(new DOMParser).parseFromString(a,"text/xml");return b&&b.documentElement&&"parsererror"!=b.documentElement.nodeName?b:null},H=c.parseJSON||function(a){return window.eval("("+a+")")};return v}if(!this.length)return p("ajaxSubmit: skipping submit process - no element selected"),this;var g,b,k=this;"function"==typeof a&&(a={success:a});g=this.attr("method");b=this.attr("action");(b=(b="string"===typeof b?c.trim(b):"")||window.location.href||"")&&(b=(b.match(/^([^#]+)/)||[])[1]);a=c.extend(!0,{url:b,success:c.ajaxSettings.success,type:g||"GET",iframeSrc:/^https/i.test(window.location.href||"")?"javascript:false":"about:blank"},a);b={};this.trigger("form-pre-serialize",[this,a,b]);if(b.veto)return p("ajaxSubmit: submit vetoed via form-pre-serialize trigger"),this;if(a.beforeSerialize&&!1===a.beforeSerialize(this,a))return p("ajaxSubmit: submit aborted via beforeSerialize callback"),this;var f=a.traditional;void 0===f&&(f=c.ajaxSettings.traditional);var n=[],j,l=this.formToArray(a.semantic,n);a.data&&(a.extraData=a.data,j=c.param(a.data,f));if(a.beforeSubmit&&!1===a.beforeSubmit(l,this,a))return p("ajaxSubmit: submit aborted via beforeSubmit callback"),this;this.trigger("form-submit-validate",[l,this,a,b]);if(b.veto)return p("ajaxSubmit: submit vetoed via form-submit-validate trigger"),this;b=c.param(l,f);j&&(b=b?b+"&"+j:j);"GET"==a.type.toUpperCase()?(a.url+=(0<=a.url.indexOf("?")?"&":"?")+b,a.data=null):a.data=b;var i=[];a.resetForm&&i.push(function(){k.resetForm()});a.clearForm&&i.push(function(){k.clearForm(a.includeHidden)});if(!a.dataType&&a.target){var C=a.success||function(){};i.push(function(b){var e=a.replaceTarget?"replaceWith":"html";c(a.target)[e](b).each(C,arguments)})}else a.success&&i.push(a.success);a.success=function(b,c,e){for(var g=a.context||this,f=0,d=i.length;f<d;f++)i[f].apply(g,[b,c,e||k,k])};j=0<c("input:file:enabled[value]",this).length;b="multipart/form-data"==k.attr("enctype")||"multipart/form-data"==k.attr("encoding");f=A&&B;p("fileAPI :"+f);var y;if(!1!==a.iframe&&(a.iframe||(j||b)&&!f))a.closeKeepAlive?c.get(a.closeKeepAlive,function(){y=e(l)}):y=e(l);else if((j||b)&&f){var u=new FormData;for(j=0;j<l.length;j++)u.append(l[j].name,l[j].value);if(a.extraData){j=c.param(a.extraData).split("&");b=j.length;var f={},z,t;for(z=0;z<b;z++)t=j[z].split("="),f[decodeURIComponent(t[0])]=decodeURIComponent(t[1]);for(var m in f)f.hasOwnProperty(m)&&u.append(m,f[m])}a.data=null;m=c.extend(!0,{},c.ajaxSettings,a,{contentType:!1,processData:!1,cache:!1,type:g||"POST"});a.uploadProgress&&(m.xhr=function(){var b=jQuery.ajaxSettings.xhr();b.upload&&(b.upload.onprogress=function(b){var c=0,e=b.loaded||b.position,f=b.total;b.lengthComputable&&(c=Math.ceil(100*(e/f)));a.uploadProgress(b,e,f,c)});return b});m.data=null;var E=m.beforeSend;m.beforeSend=function(a,b){b.data=u;E&&E.call(this,a,b)};y=c.ajax(m)}else y=c.ajax(a);k.removeData("jqxhr").data("jqxhr",y);for(m=0;m<n.length;m++)n[m]=null;this.trigger("form-submit-notify",[this,a]);return this};c.fn.ajaxForm=function(a){a=a||{};a.delegation=a.delegation&&c.isFunction(c.fn.on);if(!a.delegation&&0===this.length){var e=this.selector,g=this.context;if(!c.isReady&&e)return p("DOM not ready, queuing ajaxForm"),c(function(){c(e,g).ajaxForm(a)}),this;p("terminating; zero elements found by selector"+(c.isReady?"":" (DOM not ready)"));return this}return a.delegation?(c(document).off("submit.form-plugin",this.selector,u).off("click.form-plugin",this.selector,t).on("submit.form-plugin",this.selector,a,u).on("click.form-plugin",this.selector,a,t),this):this.ajaxFormUnbind().bind("submit.form-plugin",a,u).bind("click.form-plugin",a,t)};c.fn.ajaxFormUnbind=function(){return this.unbind("submit.form-plugin click.form-plugin")};c.fn.formToArray=function(a,e){var g=[];if(0===this.length)return g;var b=this[0],k=a?b.getElementsByTagName("*"):b.elements;if(!k)return g;var f,n,j,l,i,p;f=0;for(p=k.length;f<p;f++)if(i=k[f],j=i.name)if(a&&b.clk&&"image"==i.type)!i.disabled&&b.clk==i&&(g.push({name:j,value:c(i).val(),type:i.type}),g.push({name:j+".x",value:b.clk_x},{name:j+".y",value:b.clk_y}));else if((l=c.fieldValue(i,!0))&&l.constructor==Array){e&&e.push(i);n=0;for(i=l.length;n<i;n++)g.push({name:j,value:l[n]})}else if(A&&"file"==i.type&&!i.disabled)if(e&&e.push(i),l=i.files,l.length)for(n=0;n<l.length;n++)g.push({name:j,value:l[n],type:i.type});else g.push({name:j,value:"",type:i.type});else null!==l&&"undefined"!=typeof l&&(e&&e.push(i),g.push({name:j,value:l,type:i.type,required:i.required}));if(!a&&b.clk&&(k=c(b.clk),f=k[0],(j=f.name)&&!f.disabled&&"image"==f.type))g.push({name:j,value:k.val()}),g.push({name:j+".x",value:b.clk_x},{name:j+".y",value:b.clk_y});return g};c.fn.formSerialize=function(a){return c.param(this.formToArray(a))};c.fn.fieldSerialize=function(a){var e=[];this.each(function(){var g=this.name;if(g){var b=c.fieldValue(this,a);if(b&&b.constructor==Array)for(var k=0,f=b.length;k<f;k++)e.push({name:g,value:b[k]});else null!==b&&"undefined"!=typeof b&&e.push({name:this.name,value:b})}});return c.param(e)};c.fn.fieldValue=function(a){for(var e=[],g=0,b=this.length;g<b;g++){var k=c.fieldValue(this[g],a);null===k||("undefined"==typeof k||k.constructor==Array&&!k.length)||(k.constructor==Array?c.merge(e,k):e.push(k))}return e};c.fieldValue=function(a,e){var g=a.name,b=a.type,k=a.tagName.toLowerCase();void 0===e&&(e=!0);if(e&&(!g||a.disabled||"reset"==b||"button"==b||("checkbox"==b||"radio"==b)&&!a.checked||("submit"==b||"image"==b)&&a.form&&a.form.clk!=a||"select"==k&&-1==a.selectedIndex))return null;if("select"==k){var f=a.selectedIndex;if(0>f)return null;for(var g=[],k=a.options,n=(b="select-one"==b)?f+1:k.length,f=b?f:0;f<n;f++){var j=k[f];if(j.selected){var l=j.value;l||(l=j.attributes&&j.attributes.value&&!j.attributes.value.specified?j.text:j.value);if(b)return l;g.push(l)}}return g}return c(a).val()};c.fn.clearForm=function(a){return this.each(function(){c("input,select,textarea",this).clearFields(a)})};c.fn.clearFields=c.fn.clearInputs=function(a){var e=/^(?:color|date|datetime|email|month|number|password|range|search|tel|text|time|url|week)$/i;return this.each(function(){var g=this.type,b=this.tagName.toLowerCase();if(e.test(g)||"textarea"==b)this.value="";else if("checkbox"==g||"radio"==g)this.checked=!1;else if("select"==b)this.selectedIndex=-1;else if(a&&(!0===a&&/hidden/.test(g)||"string"==typeof a&&c(this).is(a)))this.value=""})};c.fn.resetForm=function(){return this.each(function(){("function"==typeof this.reset||"object"==typeof this.reset&&!this.reset.nodeType)&&this.reset()})};c.fn.enable=function(a){void 0===a&&(a=!0);return this.each(function(){this.disabled=!a})};c.fn.selected=function(a){void 0===a&&(a=!0);return this.each(function(){var e=this.type;"checkbox"==e||"radio"==e?this.checked=a:"option"==this.tagName.toLowerCase()&&(e=c(this).parent("select"),a&&(e[0]&&"select-one"==e[0].type)&&e.find("option").selected(!1),this.selected=a)})};c.fn.ajaxSubmit.debug=!1})(jQuery);
 /*! jQuery String Padding Plugin https://github.com/Andy-Holland/jQuery.pad */
 (function(e,t){t.pad=function(e,t,n,r){e=e.toString();if(typeof t=="undefined")t=1;if(typeof n=="undefined")n=" ";if(typeof r=="undefined")r="l";if(e.length<t){if(r[0]=="l")return Array(t-e.length+1).join(n)+e;return e+Array(t-e.length+1).join(n)}return e};t.lpad=function(e,n,r){return t.pad(e,n,r,"l")};t.rpad=function(e,n,r){return t.pad(e,n,r,"r")}})(window,jQuery);
+/*! jQuery URL Plugin https://github.com/allmarkedup/purl */
+(function(n){"function"===typeof define&&define.amd?define(n):window.purl=n()})(function(){function n(b,c){for(var a=decodeURI(b),a=s[c?"strict":"loose"].exec(a),d={attr:{},param:{},seg:{}},g=14;g--;)d.attr[t[g]]=a[g]||"";d.param.query=p(d.attr.query);d.param.fragment=p(d.attr.fragment);d.seg.path=d.attr.path.replace(/^\/+|\/+$/g,"").split("/");d.seg.fragment=d.attr.fragment.replace(/^\/+|\/+$/g,"").split("/");d.attr.base=d.attr.host?(d.attr.protocol?d.attr.protocol+"://"+d.attr.host:d.attr.host)+(d.attr.port?":"+d.attr.port:""):"";return d}function u(b){b=b.tagName;return"undefined"!==typeof b?v[b.toLowerCase()]:b}function q(b,c,a,d){var g=b.shift();if(g){var e=c[a]=c[a]||[];if("]"==g)if(m(e))""!==d&&e.push(d);else if("object"==typeof e){c=b=e;a=[];for(var f in c)c.hasOwnProperty(f)&&a.push(f);b[a.length]=d}else c[a]=[c[a],d];else{~g.indexOf("]")&&(g=g.substr(0,g.length-1));if(!r.test(g)&&m(e))if(0===c[a].length)e=c[a]={};else{f={};for(var l in c[a])f[l]=c[a][l];e=c[a]=f}q(b,e,g,d)}}else m(c[a])?c[a].push(d):c[a]="object"==typeof c[a]?d:"undefined"==typeof c[a]?d:[c[a],d]}function p(b){return w(String(b).split(/&|;/),function(c,a){try{a=decodeURIComponent(a.replace(/\+/g," "))}catch(d){}var b=a.indexOf("="),e;a:{for(var f=a.length,l,h=0;h<f;++h)if(l=a[h],"]"==l&&(e=!1),"["==l&&(e=!0),"="==l&&!e){e=h;break a}e=void 0}f=a.substr(0,e||b);e=a.substr(e||b,a.length);e=e.substr(e.indexOf("=")+1,e.length);""===f&&(f=a,e="");b=f;f=e;if(~b.indexOf("]")){var k=b.split("[");q(k,c,"base",f)}else{if(!r.test(b)&&m(c.base)){e={};for(k in c.base)e[k]=c.base[k];c.base=e}""!==b&&(k=c.base,e=k[b],"undefined"===typeof e?k[b]=f:m(e)?e.push(f):k[b]=[e,f])}return c},{base:{}}).base}function w(b,c,a){for(var d=0,g=b.length>>0;d<g;)d in b&&(a=c.call(void 0,a,b[d],d,b)),++d;return a}function m(b){return"[object Array]"===Object.prototype.toString.call(b)}function h(b,c){1===arguments.length&&!0===b&&(c=!0,b=void 0);b=b||window.location.toString();return{data:n(b,c||!1),attr:function(a){a=x[a]||a;return"undefined"!==typeof a?this.data.attr[a]:this.data.attr},param:function(a){return"undefined"!==typeof a?this.data.param.query[a]:this.data.param.query},fparam:function(a){return"undefined"!==typeof a?this.data.param.fragment[a]:this.data.param.fragment},segment:function(a){if("undefined"===typeof a)return this.data.seg.path;a=0>a?this.data.seg.path.length+a:a-1;return this.data.seg.path[a]},fsegment:function(a){if("undefined"===typeof a)return this.data.seg.fragment;a=0>a?this.data.seg.fragment.length+a:a-1;return this.data.seg.fragment[a]}}}var v={a:"href",img:"src",form:"action",base:"href",script:"src",iframe:"src",link:"href",embed:"src",object:"data"},t="source protocol authority userInfo user password host port relative path directory file query fragment".split(" "),x={anchor:"fragment"},s={strict:/^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*):?([^:@]*))?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,loose:/^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*):?([^:@]*))?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/},r=/^[0-9]+$/;h.jQuery=function(b){null!=b&&(b.fn.url=function(c){var a="";this.length&&(a=b(this).attr(u(this[0]))||"");return h(a,c)},b.url=h)};h.jQuery(window.jQuery);return h});
 /**** Assign jQuery to window.RL_JQUERY ****/
 window.rl_jquery = jQuery.noConflict(true);
 window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.com", "reachlocal.net", "rtrk.com", "rtrk.com.au", "rtrk1.com", "rtrk2.com", "rtrk5.com", "search-dealer.com", "smrtlnk.com", "trvlclick.com"]; // Hard proxy base domains.
@@ -1373,7 +1375,8 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
      * Return: object
      */
     API._prepData._getSearchRegexp = function(number) {
-      var regexp;
+      var doNotFormat = number.indexOf("#") > -1 ? true : false,
+          regexp;
 
       // Remove non-digits.
       number = number.replace(/[^\d]*/gi, "");
@@ -1387,6 +1390,11 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
       for (var i = 0, length = number.length; i < length; i++) {
         regexp.push(number.charAt(i));
         regexp.push(DELIMITER_PATTERN);
+      }
+
+      if (doNotFormat === true) {
+        regexp.shift();
+        regexp.pop();
       }
 
       return new RegExp(regexp.join(""), "g");
@@ -3530,6 +3538,135 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
   })();
 })(window, window.RL, window.rl_jquery);
 /**
+ * Provide a set of base functions in the RL.lib namespace.
+ *
+ * List of functions in RL.lib namespace:
+ */
+
+(function(window, RL_LIB, RL, $) {
+  "use strict";
+
+  var CVT = {
+    getCvtByUrlAndCampaignId: (function() {
+      var API = function(url, campaignId) {
+        var cvtsFilteredByUrl = CVT.getCvtsByUrl(url);
+
+        for (var cvtUrl in cvtsFilteredByUrl) {
+          var cvts = cvtsFilteredByUrl[cvtUrl],
+              cvt = API._getCvtByCampaignId.call(cvts, campaignId);
+
+          if (cvt) {
+            return cvt;
+          }
+        }
+
+        return null;
+      };
+
+      API._getCvtByCampaignId = function(campaignId) {
+        var cvts = this;
+
+        for (var i = 0, length = cvts.length; i < length; i++) {
+          var cvt = cvts[i];
+
+          if (cvt.campaign_id === campaignId) {
+            return cvt;
+          }
+        }
+
+        return null;
+      };
+
+      return API;
+    })(),
+
+    /**
+     * Get all CVTs that applies to the specified url.
+     *
+     * Matching CVTs are returned in a hash.
+     *
+     * .getCvtsByUrl(url)
+     * url - string - url
+     *
+     * Return: object
+     */
+    getCvtsByUrl: (function() {
+      var API = function(url) {
+        var $url,
+            host,
+            paths,
+            cvts;
+
+        if (typeof url !== "string" || url === "") {
+          return {};
+        }
+
+        cvts = RL.config.cvts;
+
+        host = API._getHost.call(cvts, url);
+        if (!host) {
+          return {};
+        }
+
+        paths = API._getPath.call(cvts, host, url.replace(host, ""));
+        if (paths.length === 0) {
+          return {};
+        }
+
+        return API._getCvts.call(cvts, host, API._sortPathsByLongestToShortest(paths));
+      };
+
+      API._getHost = function(url) {
+        var cvts = this;
+
+        for (var cvtHost in cvts) {
+          if (url.indexOf(cvtHost) === 0) {
+            return cvtHost;
+          }
+        }
+
+        return null;
+      };
+
+      API._getPath = function(host, relativePath) {
+        var cvts = this[host],
+            paths = [];
+
+        for (var cvtRelativePath in cvts) {
+          if (relativePath.indexOf(cvtRelativePath) > -1) {
+            paths.push(cvtRelativePath);
+          }
+        }
+
+        return paths;
+      };
+
+      API._getCvts = function(host, paths) {
+        var cvtsFilteredByHost = this[host],
+            cvts = {};
+
+        for (var i = 0, length = paths.length; i < length; i++) {
+          var path = paths[i];
+          cvts[[host, path].join("")] = cvtsFilteredByHost[path];
+        }
+
+        return cvts;
+      };
+
+      API._sortPathsByLongestToShortest = function(paths) {
+        return paths.sort(function(a, b) {
+          return b.length - a.length;
+        });
+      };
+
+      return API;
+    })()
+  }
+
+  RL_LIB.CVT = CVT;
+
+})(window, window.RL.lib, window.RL, window.rl_jquery);
+/**
  * MODULES.
  */
 
@@ -3573,15 +3710,14 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
          *
          * data object:
          * visitorId - string - (optional) visitor id
+         * visitId - string - (optional) visit id
+         * referrerType - string - (optional) referrer type
+         * referrerSource - string - (optional) referrer source
          */
         trackVisit: function(data, callback) {
           var URI = "/api/v1/visits",
-              eventId = ["trackVisit", String.random(7)].join("-"),
+              eventId = this._generateEventId("trackVisit"),
               payload = $.extend(this._buildCampaignPayload(false), this._buildPayload());
-
-          // Required params.
-
-          // Optional params.
 
           if (typeof data.visitorId === "string" && data.visitorId !== "") {
             payload.visitor_id = data.visitorId;
@@ -3610,15 +3746,11 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
          */
         trackEmail: function(data) {
           var URI = "/api/v1/emails",
-            eventId = ["trackEmail", String.random(7)].join("-"),
+            eventId = this._generateEventId("trackEmail"),
             payload = $.extend(this._buildCampaignPayload(), this._buildPayload());
 
-          // Required params.
-
-          payload.visit_id = data.visitId;      // Visit id.
-          payload.visitor_id = data.visitorId;  // Visitor id.
-
-          // Optional params.
+          payload.visit_id = data.visitId || "";
+          payload.visitor_id = data.visitorId || "";
 
           // CVT-type dependent data.
           for (var p in data) {
@@ -3632,7 +3764,7 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
             }
           }
 
-          this._sendRequest.call(this, URI, eventId, payload);
+          this._sendRequest(URI, eventId, payload);
         },
         /**
          * Track form post data.
@@ -3647,16 +3779,12 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
          */
         trackPost: function(data, callback) {
           var URI = "/api/v1/posts",
-              eventId = ["trackPost", String.random(7)].join("-"),
+              eventId = this._generateEventId("trackPost"),
               requiredFields = {phone: false, email: false},
               payload = $.extend(this._buildCampaignPayload(), this._buildPayload());
 
-          // Required params.
-
-          payload.visit_id = data.visitId;      // Visit id.
-          payload.visitor_id = data.visitorId;  // Visitor id.
-
-          // Optional params.
+          payload.visit_id = data.visitId || "";
+          payload.visitor_id = data.visitorId || "";
 
           // CVT-type dependent data.
           for (var p in data) {
@@ -3717,7 +3845,7 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
           }
 
           if (requiredFields.phone || requiredFields.email) {
-            this._sendRequest.call(this, URI, eventId, payload, callback);
+            this._sendRequest(URI, eventId, payload, callback);
           } else if (typeof callback === "function") {
             callback();
           }
@@ -3736,18 +3864,14 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
          */
         trackCvt: function(data) {
           var URI = "/api/v1/cvts",
-              eventId = ["trackCvt", String.random(7)].join("-"),
+              eventId = this._generateEventId("trackCvt"),
               payload = $.extend(this._buildCampaignPayload(), this._buildPayload());
 
-          // Required params.
-
           payload.src = "capture";
-          payload.idpagecvt = data.cvtId;       // CVT id.
-          payload.event = data.cvtType;         // CVT type.
-          payload.visit_id = data.visitId;      // Visit id.
-          payload.visitor_id = data.visitorId;  // Visitor id.
-
-          // Optional params.
+          payload.idpagecvt = data.cvtId || "";       // CVT id.
+          payload.event = data.cvtType || "";         // CVT type.
+          payload.visit_id = data.visitId || "";      // Visit id.
+          payload.visitor_id = data.visitorId || "";  // Visitor id.
 
           // CVT-type dependent data.
           for (var p in data) {
@@ -3763,12 +3887,12 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
             }
           }
 
-          this._sendRequest.call(this, URI, eventId, payload);
+          this._sendRequest(URI, eventId, payload);
         },
 
-        _sendRequest: function(url, eventId, data, callback) {
+        _sendRequest: function(urlPath, eventId, data, callback) {
           var config = RL.config,
-              url = ["//", config.id, ".", config.config.domains.capture, url].join(""),
+              url = this._buildUrl(config.id, config.config.domains.capture, urlPath),
               payload = $.extend({rl_eid: eventId}, data);
 
           // Send POST request.
@@ -3845,7 +3969,7 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
             data.master_campaign_id = (campaignData[data.campaign_id] || {}).master_campaign_id;
             data.kw = campaign.kw || "";
             data.pub_cr_id = campaign.pub_cr_id || "";
-            data.referrer_source = 'PAID';
+            data.referrer_source = "PAID";
           } else {
             try {
               data.master_campaign_id = (campaignData[sessionStorage.getItem("referrer_type")] || {}).master_campaign_id;
@@ -3859,7 +3983,7 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
               } catch(err) {}
             }
 
-            data.referrer_source = 'ORGANIC';
+            data.referrer_source = "ORGANIC";
           }
 
           if (data.master_campaign_id) {
@@ -3867,6 +3991,17 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
           }
 
           return data;
+        },
+
+        _buildUrl: function(siteId, host, path) {
+          var config = RL.config,
+              protocol = (config.env === "P" || config.env === "QA") ? "https" : "http";
+
+          return [protocol, "://", siteId, ".", host, path].join("");
+        },
+
+        _generateEventId: function(prefix) {
+          return [prefix, String.random(7)].join("-");
         }
       };
     },
@@ -4138,288 +4273,6 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
     },
 
     /**
-     * Track CVTs.
-     *
-     * CVTs are stored in RL.config.cvts object.  If that object does not exist, then one will be created.
-     *
-     * Subscribes to form-submission-capture.callback event to track POST events and capture form data.
-     *
-     * .trackCvt()
-     */
-    CVT: function() {
-      var self = RL,  // RL alias.
-          $ = self.jq,  // jQuery alias.
-          post;     // Undefined if page request is not type POST.
-
-      // Check if current page is a POST request.
-      self.CaptureStorage.getItem("rl_capture_post", function(data) {
-        post = data.rl_capture_post ? data.rl_capture_post : undefined;
-      });
-
-      // Make sure rl_config.js has a "cvts" section.
-      if (!$.isPlainObject(self.config.cvts)) {
-        self.config.cvts = {};
-      }
-
-      self.trackCvt = (function() {
-        var config = self.config,             // Config.
-          platform = config.config.platform,  // Platform.
-          campaign = config.config.campaign,  // Campaign info.
-          pageCvts;                           // Current page's CVT info.
-
-        // Helper function to get CVT info for a given URL.
-        var getCvt = function(originalUri) {
-          var cvtConfig = config.cvts,  // CVT config.
-            data = [],                  // All the CVTs for the page.
-            cvt;                        // Paid CVT.
-
-          // Update campaign info.
-          campaign = config.config.campaign;
-
-          // Make sure uri is in lower case for comparision
-          var uri = originalUri.toLowerCase();
-
-          data = (function() {
-            // Get list of CVTs from config.
-            for (var cvtDomain in cvtConfig) {
-              var cvtPaths = cvtConfig[cvtDomain];
-
-              cvtDomain = cvtDomain.toLowerCase();
-
-              if (uri.indexOf(cvtDomain) !== 0) {
-                // Not matching protocol & domain.
-                continue;
-              }
-
-              // Remove protocol and domain for current url.
-              uri = uri.replace(cvtDomain, "");
-
-              if (uri.charAt(0) !== "/") {
-                // Prefix a slash if missing.
-                uri = ["/", uri].join("");
-              }
-
-              for (var cvtPath in cvtPaths) {
-                var path = [cvtPath.charAt(0) !== "/" ? "/" : "", cvtPath.toLowerCase()].join("");
-
-                if (uri.indexOf(path) !== 0) {
-                  // Not a substring of the current url.
-                  continue;
-                }
-
-                // Return array of CVTs.
-                return cvtPaths[cvtPath] || [];
-              }
-            }
-
-            return [];
-          })();
-
-          cvt = (function() {
-            var campaignCid;
-
-            if (campaign.isPaidCampaign === true) {
-              campaignCid = [platform, campaign.cid].join("_");
-
-              // Clean up data.
-              for (var i = -1, length = data.length; ++i < length;) {
-                var d = data[i];
-
-                if (d.campaign_id === campaignCid) {
-                  return d;
-                }
-              }
-            }
-
-            return undefined;
-          })();
-
-          return {
-            data: data,   // Page CVTs.
-            cvt: cvt    // Paid campaign CVT.
-          };
-        };
-
-        // Helper function track CVT event.
-        var trackCvt = function(cvtId, cvtType, o) {
-          var self = this,
-            $ = self.jq,
-            fname,
-            referrer;
-
-          if ($.isPlainObject(o)) {
-            if (typeof o.fname === "string") {
-              fname = o.fname;
-            }
-            if (typeof o.referrer === "string") {
-              referrer = o.referrer;
-            }
-          }
-
-          (function(o) {
-            var visitorId,
-                visitId,
-                eventId;
-
-            try {
-              visitorId = sessionStorage.getItem("visitor_id");
-              visitId = sessionStorage.getItem("visit_id");
-            } catch(err) {
-              visitorId = null;
-              visitId = null;
-            }
-
-            if (visitId !== null && visitorId !== null) {
-              // Track CVT since visit and visitor ids are available.
-              self.CaptureWS.trackCvt({
-                cvtId: o.id,
-                cvtType: o.type,
-                visitorId: visitorId,
-                visitId: visitId,
-                referrer: o.referrer,
-                fname: o.fname
-              });
-              return;
-            }
-
-            // Wait for visit and visitor ids to be available.
-            eventId = self.lib.Events.subscribe("Capture_visit", function(data) {
-              // Unsubscribe to event.
-              self.lib.Events.unsubscribe(eventId);
-
-              // Track CVT since visit and visitor ids are available.
-              self.CaptureWS.trackCvt({
-                cvtId: o.id,
-                cvtType: o.type,
-                visitorId: data.visitorId,
-                visitId: data.visitId,
-                referrer: o.referrer,
-                fname: o.fname
-              });
-            });
-          })({id: cvtId, type: cvtType === "high" ? 8 : 7, referrer: referrer, fname: fname});
-        };
-
-        // Helper function track form post.
-        var trackPost = function(data, complete) {
-          var visitorId,
-              visitId,
-              eventId,
-              timeoutId;
-
-          try {
-            visitorId = sessionStorage.getItem("visitor_id");
-            visitId = sessionStorage.getItem("visit_id");
-          } catch(err) {
-            visitorId = null;
-            visitId = null;
-          }
-
-          if (visitId !== null && visitorId !== null) {
-            data.visitId = visitId;
-            data.visitorId = visitorId;
-
-            // Track Post since visit and visitor ids are available.
-            self.CaptureWS.trackPost(data, complete);
-            return;
-          }
-
-          // Wait for visit and visitor ids to be available.
-          eventId = self.lib.Events.subscribe("Capture_visit", function(data) {
-            // Unsubscribe to event.
-            self.lib.Events.unsubscribe(eventId);
-
-            // End timeout.
-            clearTimeout(timeoutId);
-
-            data.visitId = visitId;
-            data.visitorId = visitorId;
-
-            // Track CVT since visit and visitor ids are available.
-            self.CaptureWS.trackPost(data, complete);
-          });
-
-          timeoutId = setTimeout(function() {
-            self.CaptureWS.trackPost(data, complete);
-          }, 1000);
-        };
-
-        // Subscribe to form-submission-capture.callback event.
-        self.lib.Events.subscribe("captured_form_submission", function(data, complete) {
-          var formCvts = getCvt.call(self, data.url),
-            cvt = formCvts.cvt,
-            isAuto8 = false;
-
-          // Initialize variables just in case they are undefined.
-          if (pageCvts === undefined) {
-            pageCvts = {data: [], cvt: undefined};
-          }
-
-          if (cvt !== undefined || (pageCvts.cvt !== undefined && pageCvts.cvt.value === "low")) {
-            // Form post is a CVT.
-            if (pageCvts.cvt && pageCvts.cvt.value === "low" && (cvt === undefined || cvt.value !== "high")) {
-              // Auto 8.
-              cvt = {
-                cvtid: pageCvts.cvt.cvtid,
-                value: "high"
-              };
-              isAuto8 = true;
-            }
-          }
-
-          if (cvt !== undefined) {
-            // Track CVT POST event.
-            trackCvt.call(self, cvt.cvtid, cvt.value, {referrer: config.config.pageUri.href, fname: data.url});
-          }
-
-          var payload = {
-            formUri: data.url,
-            postbody: data.data
-          };
-          if (isAuto8 === true) {
-            payload.referrer = config.config.pageUri.href;
-          }
-
-          // Track form post.
-          trackPost.call(self, payload, function() {
-            // Set POST action flag.
-            self.CaptureStorage.setItem([{k: "rl_capture_post", v: data.url, e: parseInt((new Date()).getTime() / 1000) + 60}], function() {
-              if (typeof complete === "function") {
-                complete();
-              }
-            });
-          });
-
-          return false;
-         }, self);
-
-        return function() {
-          var cvt;
-
-          // Get current page's CVT info.
-          pageCvts = getCvt.call(this, config.config.pageUri.href);
-          cvt = pageCvts.cvt;
-
-          if (post === config.config.pageUri.href) {
-            // POST event are tracked before the post.
-
-            // Remove POST action flag.
-            this.CaptureStorage.removeItem("rl_capture_post");
-            return;
-          }
-
-          if (cvt !== undefined) {
-                // Track CVT event.
-                trackCvt.call(this, cvt.cvtid, cvt.value);
-              }
-
-              // Not a CVT page.
-              return false;
-        };
-      })();
-    },
-
-    /**
      * Collect form submit and AJAX request data.
      *
      * Collects data from input (text, password, hidden, checkbox, and radio), textarea,
@@ -4511,9 +4364,9 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
 
                     hasSubmitted = true;
 
-                    self.lib.Events.trigger("captured_form_submission", undefined, {form: formE, url: formE.action, data: $(formE).formSerialize()}, function() {
+                    RL.lib.Events.trigger("captured_form_submission", function() {
                       $formE.find(":submit").click();
-                    });
+                    }, {form: formE, url: formE.action, data: $(formE).formSerialize()});
 
                     return false;
                   }
@@ -4544,10 +4397,10 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
                     }
 
                     // Dispatch form-submission-capture.callback event.
-                    self.lib.Events.trigger("captured_form_submission", undefined, {form: formE, url: formE.action, data: formData}, function() {
+                    RL.lib.Events.trigger("captured_form_submission", function() {
                       // Form submission is not cancelled.
                       formE.submit();
-                    });
+                    }, {form: formE, url: formE.action, data: formData});
                   } else {
                     // Form submission is blocked in the onsubmit handler.
                     formE.submit = (function(formE) {
@@ -4565,10 +4418,10 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
                           return;
                         }
 
-                        self.lib.Events.trigger("captured_form_submission", undefined, {form: formE, url: formE.action, data: formData}, function() {
+                        RL.lib.Events.trigger("captured_form_submission", function() {
                           // Form submission is not cancelled.
                           submit.apply(formE, args);
-                        });
+                        }, {form: formE, url: formE.action, data: formData});
                       };
                     })(formE);
                   }
@@ -4653,7 +4506,7 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
                 submittedForms.push(formE);
 
                 // Dispatch form-submission-capture.callback event.
-                self.lib.Events.trigger("captured_form_submission", undefined, {url: formUri, data: data});
+                RL.lib.Events.trigger("captured_form_submission", undefined, {url: formUri, data: data});
                 return;
               }
             }
@@ -5364,6 +5217,10 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
 
     if (cookie === true) {
       // Visitor has opted out.
+
+     // Track CVTs.
+      SELF_INIT._trackCvts(true);
+
       return;
     }
 
@@ -5375,9 +5232,6 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
 
     // Capture form submits.
     SELF_INIT._captureFormSubmits();
-
-    // Record CVTs.
-    SELF_INIT._recordCvts();
   };
 
   /**
@@ -5676,11 +5530,135 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
   /**
    * Record CVTs.
    *
-   * .init._recordCvts()
+   * .init._trackCvts()
    */
-  API.init._recordCvts = function() {
-    RL.trackCvt();
-  };
+  API.init._trackCvts = (function() {
+    var formPostSubscriptionId,
+        postUrl,
+        pageCvt,
+        TRACKCVTS;
+
+    TRACKCVTS = function(isFormPostOnly) {
+      if (isFormPostOnly !== true && API.init._isCaptureVisit()) {
+        TRACKCVTS._getPostRequestFlag(TRACKCVTS._checkIfPostRequest);
+      }
+
+      if (formPostSubscriptionId === undefined) {
+        formPostSubscriptionId = RL.lib.Events.subscribe("captured_form_submission", TRACKCVTS._checkFormPostForCvts);
+      }
+    };
+
+    /**
+     *
+     */
+    TRACKCVTS._getPostRequestFlag = function(callback) {
+      if (postUrl === undefined) {
+        RL.CaptureStorage.getItem("rl_capture_post_url", function(data) {
+          var url = data.rl_capture_post ? data.rl_capture_post : null;
+          postUrl = url;
+          callback(url);
+        });
+      } else {
+        callback(postUrl);
+      }
+    };
+
+    /**
+     *
+     */
+    TRACKCVTS._checkIfPostRequest = function(url) {
+      var pageUrl = window.location.href,
+          cvt;
+
+      if (url === pageUrl) {
+        // CVT event has been captured already.
+        return RL.CaptureStorage.removeItem("rl_capture_post_url");
+      }
+
+      cvt = RL.lib.CVT.getCvtByUrlAndCampaignId(pageUrl, [RL.config.config.platform, RL.config.config.campaign.cid].join("_"));
+      pageCvt = cvt;
+
+      if (cvt) {
+        TRACKCVTS._sendCvtEvent(cvt.cvtid, cvt.value);
+      }
+    };
+
+    /**
+     *
+     */
+    TRACKCVTS._checkFormPostForCvts = function(data, complete) {
+      var formCvt = RL.lib.CVT.getCvtByUrlAndCampaignId(data.url, [RL.config.config.platform, RL.config.config.campaign.cid].join("_")),
+          isAuto8 = false;
+
+      if (formCvt || (pageCvt && pageCvt.value === "low")) {
+        // Form post is a CVT.
+        if (pageCvt && pageCvt.value === "low" && (!formCvt || formCvt.value !== "high")) {
+          // Auto 8.
+          formCvt = {
+            cvtid: pageCvt.cvtid,
+            value: "high"
+          };
+          isAuto8 = true;
+        }
+      }
+
+      if (formCvt) {
+        // Send CVT event for form post.
+        TRACKCVTS._sendCvtEvent(formCvt.cvtid, formCvt.value, {referrer: document.referrer, fname: data.url});
+      }
+
+      TRACKCVTS._sendPostEvent(data.url, data.data, isAuto8, complete);
+
+      return false;
+    };
+
+    /**
+     *
+     */
+    TRACKCVTS._sendCvtEvent = function(id, type, fields) {
+      var payload = {
+        cvtId: id,
+        cvtType: type === "high" ? 8 : 7,
+        visitorId: sessionStorage.getItem("visitor_id") || "",
+        visitId: sessionStorage.getItem("visit_id") || ""
+      };
+
+      if ($.isPlainObject(fields)) {
+        for (var fieldName in fields) {
+          payload[fieldName] = fields[fieldName];
+        }
+      }
+
+      RL.CaptureWS.trackCvt(payload);
+    };
+
+    /**
+     *
+     */
+    TRACKCVTS._sendPostEvent = function(url, postbody, isAuto8, complete) {
+      var payload = {
+        visitorId: sessionStorage.getItem("visitor_id") || "",
+        visitId: sessionStorage.getItem("visit_id") || "",
+        formUri: url,
+        postbody: postbody
+      };
+
+      if (isAuto8 === true) {
+        payload.referrer = document.referrer;
+      }
+
+      RL.CaptureWS.trackPost(payload, TRACKCVTS._getPostEventCallback(url, complete));
+    };
+
+    TRACKCVTS._getPostEventCallback = function(url, complete) {
+      return function() {
+        // Set POST action flag.
+        RL.CaptureStorage.setItem([{k: "rl_capture_post", v: url, e: parseInt(Date.now() / 1000) + 60}], complete);
+      };
+    };
+
+    return TRACKCVTS;
+  })();
 
   /**
    * Track visit.
@@ -5892,6 +5870,9 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
     // Phone and string replacements for organic visit.
     SELF_INIT._replacePageContent(SELF_INIT._getOrganicVisitReplacementDataType());
 
+    // Track CVTs.
+    SELF_INIT._trackCvts();
+
     // Dispatch visit event.
     RL.lib.Events.trigger("Capture_visit", undefined, {visitorId: data.visitor_id, visitId: data.visit_id, referrerType: data.referrer_type, botType: data.bot_type});
   };
@@ -5903,8 +5884,13 @@ window.RL_PROXY_DOMAINS = ["avxtrk.com", "ddcsem.com", "ezlcl.com", "reachlocal.
    * data - object - hash containing "visitorId", "visitId", and "referrerType" keys.
    */
   API.init._trackVisit._continueVisit = function(data) {
+    var SELF_INIT = API.init;
+
     // Phone and string replacements for organic visit.
-    API.init._replacePageContent(API.init._getOrganicVisitReplacementDataType());
+    SELF_INIT._replacePageContent(API.init._getOrganicVisitReplacementDataType());
+
+    // Track CVTs.
+    SELF_INIT._trackCvts();
 
     // Dispatch visit event.
     RL.lib.Events.trigger("Capture_visit", undefined, {visitorId: data.visitorId, visitId: data.visitId, referrerType: data.referrerType, botType: data.botType});
@@ -6195,7 +6181,7 @@ ChatProduct(window, window.RL);
 			}
 
 			// Dispatch hide event.
-			_$RL.lib.Events.trigger("Video_hide");
+			RL.lib.Events.trigger("Video_hide");
 
 			return _$EMAIL;
 		},
@@ -6219,7 +6205,7 @@ ChatProduct(window, window.RL);
 				_$VIDEO.show(_$VIDEO.config("autoplay"));
 
 				// Dispatch load event.
-				_$RL.lib.Events.trigger("Video_load");
+				RL.lib.Events.trigger("Video_load");
 			});
 
 			return _$VIDEO;
@@ -6277,7 +6263,7 @@ ChatProduct(window, window.RL);
 			}
 
 			// Dispatch show event.
-			_$RL.lib.Events.trigger("Video_show");
+			RL.lib.Events.trigger("Video_show");
 		}
 	};
 
@@ -6337,39 +6323,81 @@ ChatProduct(window, window.RL);
 						$rootE = $("<div>", {id: "rl-root"}).css({height: "0", width: "0"}).appendTo($("body"));
 					}
 
-					var campaignData = globalConfig.campaign_data,
-						campaignKey = [siteConfig.platform, siteConfig.campaign.cid].join("_"),
-						masterCampaignId = (campaignData[campaignKey] || {}).master_campaign_id,
-						remarketingPixels;
-
-					if (typeof masterCampaignId !== 'undefined' && typeof remarketingConfig[masterCampaignId] !== 'undefined') {
-						if (typeof remarketingConfig[masterCampaignId][siteConfig.campaign.scid] !== 'undefined') {
-							remarketingPixels = remarketingConfig[masterCampaignId][siteConfig.campaign.scid];
-						} else {
-							remarketingPixels = remarketingConfig[masterCampaignId]["default"];
-						}
-						if (typeof remarketingPixels["tags"] == "string" && remarketingPixels["tags"] !== "") {
-							var pixelId = "rl-pixel-" + pixelId;
-							$("<div>", {id: pixelId}).html(remarketingPixels["tags"] ).appendTo($rootE);
-						}
-						if (typeof remarketingPixels["scripts"] == "string" && remarketingPixels["scripts"] !== "") {
-							(function(script) {
-								try {
-									// Get and execute JS code.
-									eval.call(window, script);
-								} catch (err) {
-								}
-							})(remarketingPixels["scripts"]);
-						}
+					if (siteConfig.campaign.isPaidCampaign) {
+						$REMARKETING.dropPaid();
+					} else {
+						var eventId = _$RL.lib.Events.subscribe("Capture_visit", function(data) {
+							_$RL.lib.Events.unsubscribe(eventId);
+							$REMARKETING.dropOrganic();
+						});
 					}
 
 					// Dispatch drop event.
-					_$RL.lib.Events.trigger("Remarketing_drop");
+					RL.lib.Events.trigger("Remarketing_drop");
 
 					return this;
 				}
 			});
 		},
+
+		dropPaid: function() {
+			var campaignData = globalConfig.campaign_data,
+				campaignKey = [siteConfig.platform, siteConfig.campaign.cid].join("_"),
+				masterCampaignId = (campaignData[campaignKey] || {}).master_campaign_id,
+				remarketingPixels;
+
+			if (typeof masterCampaignId !== 'undefined' && typeof remarketingConfig[masterCampaignId] !== 'undefined') {
+				if (typeof remarketingConfig[masterCampaignId][siteConfig.campaign.scid] !== 'undefined') {
+					remarketingPixels = remarketingConfig[masterCampaignId][siteConfig.campaign.scid];
+				} else {
+					remarketingPixels = remarketingConfig[masterCampaignId]["default"];
+				}
+				$REMARKETING.dropPixels(remarketingPixels);
+			}
+		},
+
+		dropOrganic: function() {
+			var _$RL = $RL,					// $RL alias.
+				$ = _$RL.jq,
+				campaignData = globalConfig.campaign_data,
+				mcid;
+	
+			try {
+				var referrerType = sessionStorage.getItem("referrer_type");
+        mcid = (campaignData[referrerType] || {}).master_campaign_id;
+      } catch(err) {
+      }
+
+      if (!mcid) {
+        mcid = (campaignData["OTHER"] || {}).master_campaign_id;
+      }
+
+      if (typeof mcid !== 'undefined' && typeof remarketingConfig[mcid] !== 'undefined') {
+      	$.each(remarketingConfig[mcid], function(scid, pixels) {
+      		$REMARKETING.dropPixels(pixels);
+      	});
+      }
+    },
+
+    dropPixels: function(remarketingPixels) {
+    	var _$RL = $RL,					// $RL alias.
+				$ = _$RL.jq,				// jQuery alias.
+				$rootE = $("#rl-root");		// #rl-root DOM node.
+
+    	if (typeof remarketingPixels["tags"] == "string" && remarketingPixels["tags"] !== "") {
+				// pixelId = "rl-pixel-" + pixelId;
+				$("<div>").html(remarketingPixels["tags"] ).appendTo($rootE);
+			}
+			if (typeof remarketingPixels["scripts"] == "string" && remarketingPixels["scripts"] !== "") {
+				(function(script) {
+					try {
+						// Get and execute JS code.
+						eval.call(window, script);
+					} catch (err) {
+					}
+				})(remarketingPixels["scripts"]);
+			}
+    },
 
 		/**
 		 * Init.
@@ -6397,7 +6425,7 @@ ChatProduct(window, window.RL);
 				_$REMARKETING.drop();
 
 				// Dispatch load event.
-				_$RL.lib.Events.trigger("Remarketing_load");
+				RL.lib.Events.trigger("Remarketing_load");
 			});
 
 			return _$REMARKETING;
@@ -6642,8 +6670,8 @@ ChatProduct(window, window.RL);
     }
 
     // Wait for visit and visitor ids to be available.
-    eventId = _$RL.lib.Events.subscribe("Capture_visit", function(data) {
-      _$RL.lib.Events.unsubscribe(eventId);
+    eventId = RL.lib.Events.subscribe("Capture_visit", function(data) {
+      RL.lib.Events.unsubscribe(eventId);
 
       payload.visit_id = data.visitId;
       payload.visitor_id = data.visitorId;
@@ -6690,8 +6718,8 @@ ChatProduct(window, window.RL);
     }
 
     // Wait for visit and visitor ids to be available.
-    eventId = _$RL.lib.Events.subscribe("Capture_visit", function(data) {
-      _$RL.lib.Events.unsubscribe(eventId);
+    eventId = RL.lib.Events.subscribe("Capture_visit", function(data) {
+      RL.lib.Events.unsubscribe(eventId);
 
       payload.visit_id = data.visitId;
       payload.visitor_Id = data.visitorId;
@@ -6908,7 +6936,7 @@ ChatProduct(window, window.RL);
       }
 
       // Dispatch hide event.
-      _$RL.lib.Events.trigger("Email_hide");
+      RL.lib.Events.trigger("Email_hide");
 
       return _$EMAIL;
     },
@@ -6944,7 +6972,7 @@ ChatProduct(window, window.RL);
           _$EMAIL.replace();
 
           // Dispatch load event.
-          _$RL.lib.Events.trigger("Email_load");
+          RL.lib.Events.trigger("Email_load");
         });
       });
 
@@ -6989,7 +7017,7 @@ ChatProduct(window, window.RL);
       });
 
       // Dispatch replace event.
-      _$RL.lib.Events.trigger("Email_replace");
+      RL.lib.Events.trigger("Email_replace");
 
       return _$EMAIL;
     },
@@ -7068,7 +7096,7 @@ ChatProduct(window, window.RL);
       trackCvt.call(_$EMAIL, {cvtType: 2, email: companyEmail});
 
       // Dispatch show event.
-      _$RL.lib.Events.trigger("Email_show");
+      RL.lib.Events.trigger("Email_show");
 
       return _$EMAIL;
     }
@@ -7150,6 +7178,7 @@ ExternaljsProduct(window, window.RL);
 // WARNING: THE FIRST BLANK LINE MARKS THE END OF WHAT'S TO BE PROCESSED, ANY BLANK LINE SHOULD
 // GO AFTER THE REQUIRES BELOW.
 //
+
 
 
 
